@@ -22,18 +22,19 @@ io.on("connection", function(socket){
 
   socket.on("join", function(roomName){
     var rooms = io.sockets.adapter.rooms
+    var user
     console.log(rooms)
     var room = rooms.get(roomName)
 
     if(room==undefined){
       socket.join(roomName)
       socket.emit("created")
-      console.log("Room Created")
+      console.log("Room Created by", )
     }
     else if(room.size==1){
       socket.join(roomName)
       console.log("Room Joined")
-      socket.emit("joined", i
+      socket.emit("joined")
     }
     
     else{

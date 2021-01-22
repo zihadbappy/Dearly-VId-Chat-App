@@ -97,6 +97,7 @@ socket.on("joined",function(){
                 rtcPeerConnection.addTrack(userStream.getTracks()[0],userStream)
                 rtcPeerConnection.addTrack(userStream.getTracks()[1],userStream)
                 rtcPeerConnection.createOffer(function(offer){
+                    rtcPeerConnection.setLocalDescription(offer)
                     socket.emit("offer", offer, roomname)
                  },function(error){
                     console.log(error)    
@@ -107,8 +108,27 @@ socket.on("joined",function(){
 
 
             socket.on("candidate",function(){})
-            socket.on("offer",function(){})
-            socket.on("answer",function(){})
+            socket.on("offer",function(offer){
+                if(!creator){
+                    rtcPeerConnection= new RTCPeerConnection(iceServers)
+                rtcPeerConnection.onicecandidate= OnIceCandidateFunction
+                rtcPeerConnection.ontrack = OnTrackFunction
+                rtcPeerConnection.addTrack(userStream.getTracks()[0],userStream)
+                rtcPeerConnection.addTrack(userStream.getTracks()[1],userStream)
+                rtcPeerConnection.setRemoteDescription(offer)
+                rtcPeerConnection.createAnswer(function(answer){
+                    rtcPeerConnection.setLocalDescription(answer)
+                    socket.emit("answer", answer, roomname)
+                 },function(error){
+                    console.log(error)    
+                })
+
+                }
+            })
+
+            socket.on("answer",function(answer){
+                rtcPeerConnection.setRemoteDescription(answer)
+            })
 
 
 function OnIceCandidateFunction(event){
