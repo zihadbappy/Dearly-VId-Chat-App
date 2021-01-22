@@ -33,7 +33,7 @@ io.on("connection", function(socket){
     else if(room.size==1){
       socket.join(roomName)
       console.log("Room Joined")
-      socket.emit("joined")
+      socket.emit("joined", i
     }
     
     else{

@@ -5,6 +5,7 @@ var joinButton = document.getElementById("join")
 var userVideo = document.getElementById("user-video")
 var peerVideo = document.getElementById("peer-video")
 var roomInput = document.getElementById("roomName")
+var roomname= roomInput.value
 var rtcPeerConnection
 var userStream
 
@@ -21,12 +22,12 @@ userVideo.muted= "muted"
 var creator=false
 
 joinButton.addEventListener('click', function () {
-    console.log('Room Name:', roomInput.value)
-    if (roomInput.value == "") {
+    console.log('Room Name:', roomname)
+    if (roomName == "") {
         alert("Please enter a room name")
     }
     else {
-        socket.emit("join",roomInput.value)
+        socket.emit("join",roomname)
     }
 })
 
@@ -72,7 +73,7 @@ socket.on("joined",function(){
             userVideo.srcObject = stream
             userVideo.onloadedmetadata = function(e){
                 userVideo.play()}
-            socket.emit("ready",roomInput.value)
+            socket.emit("ready",roomname)
             console.log("haha to you")
         },
             function() {
@@ -96,7 +97,7 @@ socket.on("joined",function(){
                 rtcPeerConnection.addTrack(userStream.getTracks()[0],userStream)
                 rtcPeerConnection.addTrack(userStream.getTracks()[1],userStream)
                 rtcPeerConnection.createOffer(function(offer){
-                    socket.emit("offer", offer, roomInput.value)
+                    socket.emit("offer", offer, roomname)
                  },function(error){
                     console.log(error)    
                 })
@@ -112,7 +113,7 @@ socket.on("joined",function(){
 
 function OnIceCandidateFunction(event){
     if(event.onicecandidate){
-        socket.emit("candidate",event.candidate,roomInput.value)
+        socket.emit("candidate",event.candidate,roomname)
     }
 } 
 
