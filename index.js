@@ -51,6 +51,8 @@ io.on("connection", function(socket){
   })
   
   socket.on("candidate",function(candidate,roomName){
+    console.log('------------------------------')
+    console.log(candidate)
     console.log("candidate:", candidate)
     socket.broadcast.to(roomName).emit("candidate", candidate)
   })

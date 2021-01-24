@@ -107,7 +107,22 @@ socket.on("joined",function(){
         })
 
 
-            socket.on("candidate",function(){})
+        socket.on("candidate", function (candidate) {
+            var icecandidate = new RTCIceCandidate(
+                {candidate: candidate.candidate,
+                    sdpMID:candidate.sdpMID,
+                    sdpMLineIndex:candidate.sdpMLineIndex,})
+
+            rtcPeerConnection.addIceCandidate(icecandidate)
+          });
+
+            // socket.on("candidate",function(candidate){
+                
+            //     rtcPeerConnection.addIceCandidate(candidate)
+
+            // })
+            
+            
             socket.on("offer",function(offer){
                 if(!creator){
                     rtcPeerConnection= new RTCPeerConnection(iceServers)
@@ -132,7 +147,7 @@ socket.on("joined",function(){
 
 
 function OnIceCandidateFunction(event){
-    if(event.onicecandidate){
+    if(event.candidate){
         socket.emit("candidate",event.candidate,roomname)
     }
 } 
