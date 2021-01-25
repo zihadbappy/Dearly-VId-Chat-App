@@ -11,8 +11,22 @@ var userStream
 
 const iceServers = {
     iceServers:[
+        {urls: "stun:stun.services.mozilla.com"},
         {urls: "stun:stun.l.google.com:19302"},
-        {urls: "stun:stun1.l.google.com:19302"}
+        {urls: "stun:stun1.l.google.com:19302"},
+        {urls: "stun:stun3.l.google.com:19302"},
+        {urls: "stun:stun4.l.google.com:19302"},
+        {urls: "stun:stun.ekiga.net"},
+        // {urls: "stun:stun.ideasip.com"},
+        // {urls: "stun:stun.iptel.org"},
+        // {urls: "stun:stun.rixtelecom.se"},
+        // {urls: "stun:stun.schlund.de"},
+        // {urls: "stun:stunserver.org"},
+        // {urls: "stun:stun.softjoys.com"},
+        // {urls: "stun:stun.voiparound.com"},
+        // {urls: "stun:stun.voipbuster.com"},
+        // {urls: "stun:stun.voipstunt.com"}
+
     ]
 }
 
@@ -22,12 +36,12 @@ userVideo.muted= "muted"
 var creator=false
 
 joinButton.addEventListener('click', function () {
-    console.log('Room Name:', roomname)
-    if (roomName == "") {
+    console.log('Room Name:', roomInput.value)
+    if (roomInput.value == "") {
         alert("Please enter a room name")
     }
     else {
-        socket.emit("join",roomname)
+        socket.emit("join",roomInput.value)
     }
 })
 
@@ -73,7 +87,7 @@ socket.on("joined",function(){
             userVideo.srcObject = stream
             userVideo.onloadedmetadata = function(e){
                 userVideo.play()}
-            socket.emit("ready",roomname)
+            socket.emit("ready",roomInput.value)
             console.log("haha to you")
         },
             function() {
@@ -98,7 +112,7 @@ socket.on("joined",function(){
                 rtcPeerConnection.addTrack(userStream.getTracks()[1],userStream)
                 rtcPeerConnection.createOffer(function(offer){
                     rtcPeerConnection.setLocalDescription(offer)
-                    socket.emit("offer", offer, roomname)
+                    socket.emit("offer", offer, roomInput.value)
                  },function(error){
                     console.log(error)    
                 })
@@ -112,7 +126,7 @@ socket.on("joined",function(){
                 {candidate: candidate.candidate,
                     sdpMID:candidate.sdpMID,
                     sdpMLineIndex:candidate.sdpMLineIndex,})
-
+                    console.log("INSIDE CANDIDATEEEEEEEEEEEEEEE")
             rtcPeerConnection.addIceCandidate(icecandidate)
           });
 
@@ -123,7 +137,7 @@ socket.on("joined",function(){
             // })
             
             
-            socket.on("offer",function(offer){
+             socket.on("offer",function(offer){
                 if(!creator){
                     rtcPeerConnection= new RTCPeerConnection(iceServers)
                 rtcPeerConnection.onicecandidate= OnIceCandidateFunction
@@ -133,7 +147,7 @@ socket.on("joined",function(){
                 rtcPeerConnection.setRemoteDescription(offer)
                 rtcPeerConnection.createAnswer(function(answer){
                     rtcPeerConnection.setLocalDescription(answer)
-                    socket.emit("answer", answer, roomname)
+                    socket.emit("answer", answer, roomInput.value)
                  },function(error){
                     console.log(error)    
                 })
@@ -147,14 +161,18 @@ socket.on("joined",function(){
 
 
 function OnIceCandidateFunction(event){
+    console.log('EVENT CANDIDATE',event.candidate)
     if(event.candidate){
-        socket.emit("candidate",event.candidate,roomname)
+        // console.log('EVENT CANDIDATE',event.candidate)
+        socket.emit("candidate",event.candidate,roomInput.value)
     }
 } 
 
 function OnTrackFunction(event){
     peerVideo.srcObject = event.streams[0]
+    console.log("EVENT STREAM 0", event.streams[0])
     peerVideo.onloadedmetadata = function(e){
+        console.log("IN THE ONTRACKFUNC")
     peerVideo.play()
     }
 }
